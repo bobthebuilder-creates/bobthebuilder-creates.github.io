@@ -116,6 +116,12 @@
       max-width: 680px;
       margin: 0 auto;
       padding: 36px 28px 100px;
+      opacity: 0;
+      transition: opacity 300ms ease;
+    }
+
+    #personal-view.visible {
+      opacity: 1;
     }
 
     /* ── Intro block ────────────────────────────────────── */
@@ -605,11 +611,16 @@
         clearInterval(quoteTimer);
         entryView.hidden = true;
         window.scrollTo(0, 0);
-        personalView.hidden = false;
         personalView.innerHTML = referrer
           ? buildPersonalView(referrer)
           : buildDefaultView(rawName);
-        initCards();
+        personalView.hidden = false;
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            personalView.classList.add('visible');
+            initCards();
+          });
+        });
       }
 
       // ── Markdown-lite ──────────────────────────────────
