@@ -116,14 +116,6 @@
       max-width: 680px;
       margin: 0 auto;
       padding: 36px 28px 100px;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 350ms var(--ease), transform 350ms var(--ease);
-    }
-
-    #personal-view.visible {
-      opacity: 1;
-      transform: translateY(0);
     }
 
     /* ── Intro block ────────────────────────────────────── */
@@ -610,22 +602,14 @@
       });
 
       function transition(referrer, rawName) {
-        entryView.style.opacity    = '0';
-        entryView.style.transition = 'opacity 200ms ease';
         clearInterval(quoteTimer);
-        setTimeout(() => {
-          entryView.hidden = true;
-          window.scrollTo(0, 0);
-          personalView.hidden = false;
-          personalView.innerHTML = referrer
-            ? buildPersonalView(referrer)
-            : buildDefaultView(rawName);
-          requestAnimationFrame(() => {
-            personalView.classList.add('visible');
-            initCards();
-            initReveal();
-          });
-        }, 200);
+        entryView.hidden = true;
+        window.scrollTo(0, 0);
+        personalView.hidden = false;
+        personalView.innerHTML = referrer
+          ? buildPersonalView(referrer)
+          : buildDefaultView(rawName);
+        initCards();
       }
 
       // ── Markdown-lite ──────────────────────────────────
