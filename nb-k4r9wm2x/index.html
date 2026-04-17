@@ -589,28 +589,17 @@
 
       cycleQuotes();
 
-      // ── Fetch ──────────────────────────────────────────
-      fetch(`./referrers.json?v=${Date.now()}`)
-        .then(r => r.json())
-        .then(d => { data = d; })
-        .catch(() => { /* graceful degradation — show entry view anyway */ });
 
-      // ── Name entry ─────────────────────────────────────
-      entryForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const raw  = nameInput.value.trim();
-        if (!raw) return;
-        const name = raw.toLowerCase();
-        const referrer = data?.referrers?.find(
-          r => r.firstName.toLowerCase() === name
-        );
-        transition(referrer || null, raw);
-      });
+      // ── Routing ────────────────────────────────────────
+      function getHash() {
+        return decodeURIComponent(location.hash.slice(1)).toLowerCase().trim();
+      }
 
-      function transition(referrer, rawName) {
+      function showPersonal(referrer, rawName) {
         clearInterval(quoteTimer);
-        entryView.hidden = true;
         window.scrollTo(0, 0);
+        entryView.hidden = true;
+        personalView.classList.remove('visible');
         personalView.innerHTML = referrer
           ? buildPersonalView(referrer)
           : buildDefaultView(rawName);
@@ -622,6 +611,46 @@
           });
         });
       }
+
+      function showEntry() {
+        personalView.hidden = true;
+        personalView.classList.remove('visible');
+        entryView.hidden = false;
+        nameInput.value = '';
+        cycleQuotes();
+        nameInput.focus();
+      }
+
+      function route() {
+        const hash = getHash();
+        if (!hash) {
+          showEntry();
+          return;
+        }
+        const referrer = data?.referrers?.find(
+          r => r.firstName.toLowerCase() === hash
+        );
+        showPersonal(referrer || null, hash);
+      }
+
+      // ── Name entry ─────────────────────────────────────
+      entryForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const raw = nameInput.value.trim();
+        if (!raw) return;
+        location.hash = encodeURIComponent(raw.toLowerCase());
+      });
+
+      window.addEventListener('hashchange', route);
+
+      // Route on initial load (after data fetch resolves)
+      fetch(`./referrers.json?v=${Date.now()}`)
+        .then(r => r.json())
+        .then(d => {
+          data = d;
+          route();
+        })
+        .catch(() => route());
 
       // ── Markdown-lite ──────────────────────────────────
       function md(text) {
