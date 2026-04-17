@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Network Brief</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300..500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:            #0a0a0b;
+      --surface:       #14141a;
+      --surface-hover: #18181f;
+      --border:        #1e1e27;
+      --text:          #e8e8ea;
+      --secondary:     #7a7a80;
+      --tertiary:      #4a4a52;
+
+      --status-pending-text:   #7a7a80;
+      --status-pending-bg:     #18181f;
+      --status-sent-text:      #6b96c4;
+      --status-sent-bg:        #111b28;
+      --status-connected-text: #6aab7e;
+      --status-connected-bg:   #101c14;
+      --status-closed-text:    #4a4a52;
+      --status-closed-bg:      #111113;
+
+      --serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+      --sans:  'Inter', system-ui, -apple-system, sans-serif;
+
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      min-height: 100dvh;
+    }
+
+    /* ── Entry view ─────────────────────────────────────── */
+
+    #entry-view {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: 0 28px;
+    }
+
+    #entry-form {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .entry-label {
+      display: block;
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: clamp(1.75rem, 6vw, 2.25rem);
+      color: var(--text);
+      margin-bottom: 28px;
+      line-height: 1.2;
+    }
+
+    #name-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 1.0625rem;
+      font-weight: 300;
+      letter-spacing: 0.01em;
+      padding: 10px 0;
+      outline: none;
+      caret-color: var(--secondary);
+      transition: border-color 150ms;
+      -webkit-appearance: none;
+    }
+
+    #name-input::placeholder {
+      color: var(--tertiary);
+    }
+
+    #name-input:focus {
+      border-bottom-color: var(--secondary);
+    }
+
+    .entry-hint {
+      margin-top: 16px;
+      font-size: 0.8125rem;
+      color: var(--tertiary);
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Personal view ──────────────────────────────────── */
+
+    #personal-view {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 72px 28px 120px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 350ms var(--ease), transform 350ms var(--ease);
+    }
+
+    #personal-view.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Intro block ────────────────────────────────────── */
+
+    .intro-block {
+      margin-bottom: 64px;
+    }
+
+    .intro-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--secondary);
+      margin-bottom: 20px;
+    }
+
+    .intro-text {
+      font-size: 1rem;
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    .intro-text p + p {
+      margin-top: 1em;
+    }
+
+    /* ── Section headings ───────────────────────────────── */
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--secondary);
+      margin-bottom: 20px;
+    }
+
+    /* ── Contact cards ──────────────────────────────────── */
+
+    .contacts-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .contact-card {
+      background: var(--surface);
+      border-radius: 6px;
+      overflow: hidden;
+      transition: background 150ms;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 20px 18px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .card-header:hover {
+      background: var(--surface-hover);
+    }
+
+    .card-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .contact-name {
+      font-family: var(--serif);
+      font-size: 1.125rem;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 3px;
+    }
+
+    .contact-title {
+      font-size: 0.8125rem;
+      color: var(--secondary);
+      line-height: 1.4;
+    }
+
+    .card-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .status-badge {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    .status-badge[data-status="pending"]   { color: var(--status-pending-text);   background: var(--status-pending-bg); }
+    .status-badge[data-status="sent"]      { color: var(--status-sent-text);      background: var(--status-sent-bg); }
+    .status-badge[data-status="connected"] { color: var(--status-connected-text); background: var(--status-connected-bg); }
+    .status-badge[data-status="closed"]    { color: var(--status-closed-text);    background: var(--status-closed-bg); }
+
+    .card-chevron {
+      width: 16px;
+      height: 16px;
+      color: var(--tertiary);
+      transition: transform 250ms var(--ease);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .contact-card.open .card-chevron {
+      transform: rotate(180deg);
+    }
+
+    /* ── Card body (collapsible) ────────────────────────── */
+
+    .card-body-wrap {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 280ms var(--ease);
+    }
+
+    .contact-card.open .card-body-wrap {
+      grid-template-rows: 1fr;
+    }
+
+    .card-body-inner {
+      overflow: hidden;
+    }
+
+    .card-body {
+      padding: 0 20px 24px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+
+    /* Req block */
+    .req-block {
+      margin-bottom: 20px;
+      padding: 12px 14px;
+      background: var(--bg);
+      border-radius: 4px;
+      border-left: 2px solid var(--border);
+    }
+
+    .req-label {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--tertiary);
+      margin-bottom: 6px;
+    }
+
+    .req-title {
+      font-size: 0.875rem;
+      color: var(--text);
+      line-height: 1.4;
+      margin-bottom: 3px;
+    }
+
+    .req-title a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      transition: border-color 150ms;
+    }
+
+    .req-title a:hover {
+      border-bottom-color: var(--secondary);
+    }
+
+    .req-meta {
+      font-size: 0.75rem;
+      color: var(--secondary);
+    }
+
+    /* Why / Ask / Note */
+    .card-field + .card-field {
+      margin-top: 20px;
+    }
+
+    .field-label {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--tertiary);
+      margin-bottom: 6px;
+    }
+
+    .field-body {
+      font-size: 0.9375rem;
+      color: var(--secondary);
+      line-height: 1.65;
+    }
+
+    .card-field--note .field-body {
+      color: var(--text);
+      background: var(--bg);
+      border-radius: 4px;
+      padding: 14px;
+      font-size: 0.875rem;
+      white-space: pre-wrap;
+      border-left: 2px solid var(--border);
+    }
+
+    /* Copy button */
+    .copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 12px;
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      color: var(--secondary);
+      font-family: var(--sans);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: color 150ms, border-color 150ms, background 150ms;
+      -webkit-appearance: none;
+    }
+
+    .copy-btn:hover {
+      color: var(--text);
+      border-color: var(--tertiary);
+    }
+
+    .copy-btn.copied {
+      color: var(--status-connected-text);
+      border-color: var(--status-connected-bg);
+    }
+
+    /* ── Closed loop section ────────────────────────────── */
+
+    .closed-section {
+      margin-top: 56px;
+      opacity: 0.5;
+    }
+
+    .closed-section .contact-name {
+      font-size: 1rem;
+    }
+
+    /* ── Default / unknown view ─────────────────────────── */
+
+    .default-block {
+      margin-bottom: 48px;
+    }
+
+    .default-message {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: clamp(1.25rem, 4vw, 1.5rem);
+      color: var(--secondary);
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+
+    .default-sub {
+      font-size: 0.9375rem;
+      color: var(--tertiary);
+      line-height: 1.6;
+    }
+
+    /* ── Footer ─────────────────────────────────────────── */
+
+    .page-footer {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .last-updated {
+      font-size: 0.75rem;
+      color: var(--tertiary);
+      letter-spacing: 0.02em;
+    }
+
+    .reset-btn {
+      background: none;
+      border: none;
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      color: var(--tertiary);
+      cursor: pointer;
+      padding: 0;
+      letter-spacing: 0.02em;
+      transition: color 150ms;
+    }
+
+    .reset-btn:hover {
+      color: var(--secondary);
+    }
+
+    /* ── Scroll-reveal ──────────────────────────────────── */
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 400ms var(--ease), transform 400ms var(--ease);
+    }
+
+    .reveal.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Entry view -->
+  <div id="entry-view">
+    <form id="entry-form" autocomplete="off" novalidate>
+      <label for="name-input" class="entry-label">who's reading this?</label>
+      <input
+        type="text"
+        id="name-input"
+        name="name"
+        placeholder="your first name"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="words"
+        spellcheck="false"
+        enterkeyhint="go"
+        aria-label="Enter your first name"
+      >
+      <p class="entry-hint">Press Enter to continue</p>
+    </form>
+  </div>
+
+  <!-- Personal view — populated by JS -->
+  <div id="personal-view" hidden aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    (() => {
+      const $ = id => document.getElementById(id);
+      const entryView    = $('entry-view');
+      const personalView = $('personal-view');
+      const nameInput    = $('name-input');
+      const entryForm    = $('entry-form');
+
+      let data = null;
+
+      // ── Fetch ──────────────────────────────────────────
+      fetch(`./referrers.json?v=${Date.now()}`)
+        .then(r => r.json())
+        .then(d => { data = d; })
+        .catch(() => { /* graceful degradation — show entry view anyway */ });
+
+      // ── Name entry ─────────────────────────────────────
+      entryForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const raw  = nameInput.value.trim();
+        if (!raw) return;
+        const name = raw.toLowerCase();
+        const referrer = data?.referrers?.find(
+          r => r.firstName.toLowerCase() === name
+        );
+        transition(referrer || null, raw);
+      });
+
+      function transition(referrer, rawName) {
+        entryView.style.opacity    = '0';
+        entryView.style.transition = 'opacity 200ms ease';
+        setTimeout(() => {
+          entryView.hidden = true;
+          personalView.hidden = false;
+          personalView.innerHTML = referrer
+            ? buildPersonalView(referrer)
+            : buildDefaultView(rawName);
+          requestAnimationFrame(() => {
+            personalView.classList.add('visible');
+            initCards();
+            initReveal();
+          });
+        }, 200);
+      }
+
+      // ── Markdown-lite ──────────────────────────────────
+      function md(text) {
+        if (!text) return '';
+        const escaped = text
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+        return '<p>' + escaped
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.+?)\*/g,     '<em>$1</em>')
+          .replace(/\n\n/g, '</p><p>')
+          .replace(/\n/g,   '<br>')
+          + '</p>';
+      }
+
+      // ── Build personal view ────────────────────────────
+      function buildPersonalView(referrer) {
+        const active = referrer.contacts.filter(
+          c => c.status === 'pending' || c.status === 'sent'
+        );
+        const closed = referrer.contacts.filter(
+          c => c.status === 'connected' || c.status === 'closed'
+        );
+
+        const activeHTML = active.length
+          ? `<section class="contacts-section reveal">
+              <p class="section-label">${active.length} introduction${active.length !== 1 ? 's' : ''} pending</p>
+              <ul class="contacts-list" role="list">
+                ${active.map(contactCard).join('')}
+              </ul>
+            </section>`
+          : '';
+
+        const closedHTML = closed.length
+          ? `<section class="closed-section reveal">
+              <p class="section-label">Closed loop</p>
+              <ul class="contacts-list" role="list">
+                ${closed.map(contactCard).join('')}
+              </ul>
+            </section>`
+          : '';
+
+        const updated = data?.lastUpdated
+          ? `Last updated ${formatDate(data.lastUpdated)}`
+          : '';
+
+        return `
+          <div class="intro-block reveal">
+            <p class="intro-eyebrow">Network brief · Jonathan Glover</p>
+            <div class="intro-text">${md(referrer.intro)}</div>
+          </div>
+          ${activeHTML}
+          ${closedHTML}
+          <footer class="page-footer reveal">
+            <span class="last-updated">${updated}</span>
+            <button class="reset-btn" onclick="location.reload()">Not you?</button>
+          </footer>
+        `;
+      }
+
+      // ── Contact card ───────────────────────────────────
+      function contactCard(c) {
+        const reqHTML = c.req
+          ? `<div class="req-block">
+              <p class="req-label">Anchor req</p>
+              <p class="req-title">${
+                c.req.url
+                  ? `<a href="${escAttr(c.req.url)}" target="_blank" rel="noopener noreferrer">${esc(c.req.title)}</a>`
+                  : esc(c.req.title)
+              }</p>
+              <p class="req-meta">${esc(c.req.company)}${c.req.reqId ? ` · Req ${esc(c.req.reqId)}` : ''}</p>
+            </div>`
+          : '';
+
+        const whyHTML = c.why
+          ? `<div class="card-field">
+              <p class="field-label">Why them</p>
+              <p class="field-body">${esc(c.why)}</p>
+            </div>`
+          : '';
+
+        const askHTML = c.ask
+          ? `<div class="card-field">
+              <p class="field-label">What I'm asking for</p>
+              <p class="field-body">${esc(c.ask)}</p>
+            </div>`
+          : '';
+
+        const noteHTML = c.forwardNote
+          ? `<div class="card-field card-field--note">
+              <p class="field-label">Forward note</p>
+              <div class="field-body">${esc(c.forwardNote)}</div>
+              <button
+                class="copy-btn"
+                type="button"
+                data-note="${escAttr(c.forwardNote)}"
+                aria-label="Copy forward note for ${escAttr(c.name)}"
+              >
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <rect x="5" y="5" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                Copy forward note
+              </button>
+            </div>`
+          : '';
+
+        return `
+          <li>
+            <div class="contact-card" data-id="${escAttr(c.name)}">
+              <div class="card-header" role="button" tabindex="0" aria-expanded="false"
+                   aria-label="Expand details for ${escAttr(c.name)}">
+                <div class="card-meta">
+                  <p class="contact-name">${esc(c.name)}</p>
+                  <p class="contact-title">${esc(c.title)}${c.company ? ` · ${esc(c.company)}` : ''}</p>
+                </div>
+                <div class="card-right">
+                  <span class="status-badge" data-status="${escAttr(c.status)}">${esc(c.status)}</span>
+                  <svg class="card-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="card-body-wrap">
+                <div class="card-body-inner">
+                  <div class="card-body">
+                    ${reqHTML}
+                    ${whyHTML}
+                    ${askHTML}
+                    ${noteHTML}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        `;
+      }
+
+      // ── Default view ───────────────────────────────────
+      function buildDefaultView(rawName) {
+        const updated = data?.lastUpdated
+          ? `Last updated ${formatDate(data.lastUpdated)}`
+          : '';
+
+        return `
+          <div class="default-block reveal">
+            <p class="default-message">This page is personalized for specific visitors.</p>
+            <p class="default-sub">If someone shared this link with you, make sure you entered your first name exactly as they have it. Try a nickname or alternate spelling if it didn't work.</p>
+          </div>
+          <footer class="page-footer reveal">
+            <span class="last-updated">${updated}</span>
+            <button class="reset-btn" onclick="location.reload()">Try again</button>
+          </footer>
+        `;
+      }
+
+      // ── Card interactions ──────────────────────────────
+      function initCards() {
+        personalView.querySelectorAll('.card-header').forEach(header => {
+          header.addEventListener('click',   () => toggleCard(header));
+          header.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              toggleCard(header);
+            }
+          });
+        });
+
+        personalView.querySelectorAll('.copy-btn').forEach(btn => {
+          btn.addEventListener('click', e => {
+            e.stopPropagation();
+            copyNote(btn);
+          });
+        });
+      }
+
+      function toggleCard(header) {
+        const card     = header.closest('.contact-card');
+        const isOpen   = card.classList.contains('open');
+        card.classList.toggle('open', !isOpen);
+        header.setAttribute('aria-expanded', String(!isOpen));
+      }
+
+      async function copyNote(btn) {
+        const text = btn.dataset.note;
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.cssText = 'position:fixed;opacity:0;';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        const original = btn.innerHTML;
+        btn.classList.add('copied');
+        btn.innerHTML = `
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 8l4 4 6-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Copied
+        `;
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = original;
+        }, 2000);
+      }
+
+      // ── Scroll reveal ──────────────────────────────────
+      function initReveal() {
+        const els = personalView.querySelectorAll('.reveal');
+        if (!window.IntersectionObserver) {
+          els.forEach(el => el.classList.add('in-view'));
+          return;
+        }
+        const io = new IntersectionObserver(entries => {
+          entries.forEach((entry, i) => {
+            if (entry.isIntersecting) {
+              setTimeout(() => entry.target.classList.add('in-view'), i * 60);
+              io.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1 });
+        els.forEach(el => io.observe(el));
+      }
+
+      // ── Utilities ──────────────────────────────────────
+      function esc(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function escAttr(str) {
+        return esc(str).replace(/'/g, '&#39;');
+      }
+
+      function formatDate(iso) {
+        try {
+          const [y, m, d] = iso.split('-').map(Number);
+          return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+            month: 'long', day: 'numeric', year: 'numeric'
+          });
+        } catch { return iso; }
+      }
+    })();
+  </script>
+</body>
+</html>

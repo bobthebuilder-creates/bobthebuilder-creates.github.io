@@ -1,0 +1,27 @@
+{
+  "lastUpdated": "2026-04-16",
+  "referrers": [
+    {
+      "name": "Jason Mills",
+      "firstName": "Jason",
+      "intro": "Hey Jason —\n\nI put this together to make it easy for you to pass along introductions without a lot of back-and-forth. Each card below is someone I'm hoping to connect with — it has the context on why, and a forward note you can copy and send as-is or lightly edit.\n\n**Everything here is private and unindexed.** Only people I've shared this link with can see it. As I update my list, the page updates automatically — just refresh.\n\nThank you for thinking of me. This means a lot.",
+      "contacts": [
+        {
+          "name": "Ravi Raghu",
+          "title": "President, Capital One Software",
+          "company": "Capital One",
+          "status": "pending",
+          "req": {
+            "company": "Capital One · McLean, VA",
+            "title": "Director, Cloud Platforms Tech Risk Guide — Enterprise Services Risk",
+            "reqId": "9234557232",
+            "url": "https://www.capitalonecareers.com/job/mclean/director-cloud-platforms-tech-risk-guide-enterprise-services-risk/1732/79027706480"
+          },
+          "why": "Ravi runs Capital One Software — the productization of Capital One's internal tooling sold into regulated industries. He sits on the Executive Committee. His altitude means one forwarded note lands on the right internal calendar faster than a cold application ever would.",
+          "ask": "Not a referral — a 20-minute conversation on how AI governance frameworks translate between classified defense environments and regulated financial services. I've built and governed these systems at JTF scale; I want to understand how Capital One Software approaches the same problems commercially.",
+          "forwardNote": "Hey Ravi —\n\nHope you're well. I want to pass along someone I think is worth 20 minutes of your time.\n\nJonathan Glover is a defense AI practitioner I've known [years / how you know him]. He's been building and deploying AI-enabled capabilities at U.S. Army Cyber Command — environments where governance and operational rigor aren't optional. He authored the AI DCO Capabilities Framework, now used as reference governance across Joint Task Force-scale operations, and he built the underlying systems it governs. That combination — framework author and hands-on builder — is genuinely rare in cleared defense circles.\n\nHe's not looking for a referral. He's looking for a 20-minute conversation with you specifically about how AI governance frameworks translate from classified defense contexts into regulated financial services. Given what Capital One Software is building for regulated industries, I thought you'd find the signal worth your calendar.\n\nHappy to make a proper intro if you're open to it.\n\n— Jason"
+        }
+      ]
+    }
+  ]
+}
