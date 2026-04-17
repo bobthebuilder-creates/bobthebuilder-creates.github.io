@@ -115,7 +115,7 @@
     #personal-view {
       max-width: 680px;
       margin: 0 auto;
-      padding: 72px 28px 120px;
+      padding: 36px 28px 100px;
       opacity: 0;
       transform: translateY(10px);
       transition: opacity 350ms var(--ease), transform 350ms var(--ease);
@@ -439,6 +439,67 @@
       color: var(--secondary);
     }
 
+    /* ── Entry view quote rotator ───────────────────────── */
+
+    .entry-quote {
+      margin-top: 52px;
+      max-width: 420px;
+    }
+
+    .eq-text {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 0.9375rem;
+      color: var(--secondary);
+      line-height: 1.65;
+      opacity: 0;
+      transition: opacity 700ms ease;
+    }
+
+    .eq-attr {
+      margin-top: 8px;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--tertiary);
+      opacity: 0;
+      transition: opacity 700ms ease 100ms;
+    }
+
+    .entry-quote.visible .eq-text,
+    .entry-quote.visible .eq-attr {
+      opacity: 1;
+    }
+
+    /* ── Section quote divider ──────────────────────────── */
+
+    .section-quote {
+      border: none;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 22px 0;
+      margin: 44px 0 48px;
+    }
+
+    .sq-text {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--secondary);
+      line-height: 1.65;
+    }
+
+    .sq-attr {
+      display: block;
+      margin-top: 8px;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
     /* ── Scroll-reveal ──────────────────────────────────── */
 
     .reveal {
@@ -472,6 +533,10 @@
         aria-label="Enter your first name"
       >
       <p class="entry-hint">Press Enter to continue</p>
+      <div class="entry-quote" id="entry-quote" aria-hidden="true">
+        <p class="eq-text" id="eq-text"></p>
+        <p class="eq-attr" id="eq-attr"></p>
+      </div>
     </form>
   </div>
 
@@ -487,6 +552,44 @@
       const entryForm    = $('entry-form');
 
       let data = null;
+
+      const QUOTES = [
+        { text: "Security is a process, not a product.", attr: "Bruce Schneier" },
+        { text: "AI is the new electricity.", attr: "Andrew Ng" },
+        { text: "There are only two types of companies: those that have been hacked, and those that will be.", attr: "Robert Mueller, Former FBI Director" },
+        { text: "The question of whether a machine can think is about as interesting as the question of whether a submarine can swim.", attr: "Edsger Dijkstra" },
+        { text: "Encryption works. Properly implemented strong crypto systems are one of the few things you can rely on.", attr: "Edward Snowden" },
+        { text: "The only truly secure system is one that is powered off, cast in a block of concrete, and sealed in a lead-lined room with armed guards.", attr: "Gene Spafford" },
+        { text: "Intelligence is the ability to adapt to change.", attr: "Stephen Hawking" },
+        { text: "Amateurs hack systems. Professionals hack people.", attr: "Bruce Schneier" },
+      ];
+
+      // ── Entry quote rotator ────────────────────────────
+      const eqBlock = $('entry-quote');
+      const eqText  = $('eq-text');
+      const eqAttr  = $('eq-attr');
+      let quoteIndex = Math.floor(Math.random() * QUOTES.length);
+      let quoteTimer;
+
+      function showQuote(idx) {
+        eqBlock.classList.remove('visible');
+        setTimeout(() => {
+          const q = QUOTES[idx % QUOTES.length];
+          eqText.textContent = '\u201c' + q.text + '\u201d';
+          eqAttr.textContent = '— ' + q.attr;
+          eqBlock.classList.add('visible');
+        }, 700);
+      }
+
+      function cycleQuotes() {
+        showQuote(quoteIndex);
+        quoteTimer = setInterval(() => {
+          quoteIndex = (quoteIndex + 1) % QUOTES.length;
+          showQuote(quoteIndex);
+        }, 7000);
+      }
+
+      cycleQuotes();
 
       // ── Fetch ──────────────────────────────────────────
       fetch(`./referrers.json?v=${Date.now()}`)
@@ -509,8 +612,10 @@
       function transition(referrer, rawName) {
         entryView.style.opacity    = '0';
         entryView.style.transition = 'opacity 200ms ease';
+        clearInterval(quoteTimer);
         setTimeout(() => {
           entryView.hidden = true;
+          window.scrollTo(0, 0);
           personalView.hidden = false;
           personalView.innerHTML = referrer
             ? buildPersonalView(referrer)
@@ -536,6 +641,15 @@
           .replace(/\n\n/g, '</p><p>')
           .replace(/\n/g,   '<br>')
           + '</p>';
+      }
+
+      // ── Section quote ──────────────────────────────────
+      function sectionQuoteHTML() {
+        const q = QUOTES[(quoteIndex + 1) % QUOTES.length];
+        return `<blockquote class="section-quote reveal">
+          <p class="sq-text">\u201c${esc(q.text)}\u201d</p>
+          <footer class="sq-attr">${esc(q.attr)}</footer>
+        </blockquote>`;
       }
 
       // ── Build personal view ────────────────────────────
@@ -574,6 +688,7 @@
             <p class="intro-eyebrow">Network brief · Jonathan Glover</p>
             <div class="intro-text">${md(referrer.intro)}</div>
           </div>
+          ${sectionQuoteHTML()}
           ${activeHTML}
           ${closedHTML}
           <footer class="page-footer reveal">
