@@ -646,7 +646,7 @@
       // ── Section quote ──────────────────────────────────
       function sectionQuoteHTML() {
         const q = QUOTES[(quoteIndex + 1) % QUOTES.length];
-        return `<blockquote class="section-quote reveal">
+        return `<blockquote class="section-quote">
           <p class="sq-text">\u201c${esc(q.text)}\u201d</p>
           <footer class="sq-attr">${esc(q.attr)}</footer>
         </blockquote>`;
@@ -662,7 +662,7 @@
         );
 
         const activeHTML = active.length
-          ? `<section class="contacts-section reveal">
+          ? `<section class="contacts-section">
               <p class="section-label">${active.length} introduction${active.length !== 1 ? 's' : ''} pending</p>
               <ul class="contacts-list" role="list">
                 ${active.map(contactCard).join('')}
@@ -671,7 +671,7 @@
           : '';
 
         const closedHTML = closed.length
-          ? `<section class="closed-section reveal">
+          ? `<section class="closed-section">
               <p class="section-label">Closed loop</p>
               <ul class="contacts-list" role="list">
                 ${closed.map(contactCard).join('')}
@@ -684,14 +684,14 @@
           : '';
 
         return `
-          <div class="intro-block reveal">
+          <div class="intro-block">
             <p class="intro-eyebrow">Network brief · Jonathan Glover</p>
             <div class="intro-text">${md(referrer.intro)}</div>
           </div>
           ${sectionQuoteHTML()}
           ${activeHTML}
           ${closedHTML}
-          <footer class="page-footer reveal">
+          <footer class="page-footer">
             <span class="last-updated">${updated}</span>
             <button class="reset-btn" onclick="location.reload()">Not you?</button>
           </footer>
