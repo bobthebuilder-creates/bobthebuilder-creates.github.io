@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Disallow: /nb-k4r9wm2x/
